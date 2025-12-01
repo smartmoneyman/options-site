@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Options Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <span class="sidebar-logo-icon">📊</span>
+                    <span>Options Analyzer</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="index.html" class="nav-link active">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <span class="nav-icon">📤</span>
+                        <span>Upload Data</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="database.html" class="nav-link">
+                        <span class="nav-icon">🗄️</span>
+                        <span>Database</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="recommendations.html" class="nav-link">
+                        <span class="nav-icon">⭐</span>
+                        <span>Recommendations</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span>Total Records</span>
+                    <span class="stat-value" id="sidebar-total-records">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Active Signals</span>
+                    <span class="stat-value" id="sidebar-active-signals">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Hot Tickers</span>
+                    <span class="stat-value" id="sidebar-hot-tickers">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title">📊 Dashboard</h1>
+                <div class="header-actions">
+                    <span class="last-update">Last update: Never</span>
+                    <button class="btn btn-outline" onclick="refreshData()">
+                        🔄 Refresh
+                    </button>
+                    <button class="btn btn-primary" id="theme-toggle">
+                        🌙 Dark Mode
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-card-label">Win Rate</div>
+                        <div class="stat-card-value" id="win-rate">60.9%</div>
+                        <div class="stat-card-change positive">
+                            ↑ Best Strategy
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-label">Avg Return</div>
+                        <div class="stat-card-value" id="avg-return">+5.51%</div>
+                        <div class="stat-card-change positive">
+                            ↑ 10 day period
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-card-label">Active Signals</div>
+                        <div class="stat-card-value" id="active-signals">10</div>
+                        <div class="stat-card-change">
+                            Strong Buy Candidates
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-label">Total Tickers</div>
+                        <div class="stat-card-value" id="total-tickers">0</div>
+                        <div class="stat-card-change">
+                            Tracked in database
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div id="alerts-container"></div>
+
+                <!-- Top Signals -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔥 Top 10 Strong Buy Signals</h2>
+                        <button class="btn btn-primary" onclick="window.location.href='recommendations.html'">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table id="top-signals-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Ticker</th>
+                                        <th>Price</th>
+                                        <th>Change %</th>
+                                        <th>P/C Ratio</th>
+                                        <th>Frequency</th>
+                                        <th>IV Rank</th>
+                                        <th>Signal</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-signals-body">
+                                    <tr>
+                                        <td colspan="9" class="text-center">Loading data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hot Tickers (Last 10 days) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔥 Hot Tickers (Last 10 Days)</h2>
+                        <span class="badge badge-info" id="hot-tickers-count">0 tickers</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table id="hot-tickers-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Appearances</th>
+                                        <th>Price Change %</th>
+                                        <th>Avg P/C</th>
+                                        <th>Avg IV Rank</th>
+                                        <th>Last Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hot-tickers-body">
+                                    <tr>
+                                        <td colspan="7" class="text-center">Loading data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📋 Recent Activity</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-activity">
+                            <p class="text-gray">No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

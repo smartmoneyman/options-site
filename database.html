@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database - Options Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <span class="sidebar-logo-icon">📊</span>
+                    <span>Options Analyzer</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <span class="nav-icon">📤</span>
+                        <span>Upload Data</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="database.html" class="nav-link active">
+                        <span class="nav-icon">🗄️</span>
+                        <span>Database</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="recommendations.html" class="nav-link">
+                        <span class="nav-icon">⭐</span>
+                        <span>Recommendations</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span>Total Records</span>
+                    <span class="stat-value" id="sidebar-total-records">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Filtered</span>
+                    <span class="stat-value" id="sidebar-filtered">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1 class="header-title">🗄️ Database</h1>
+                <div class="header-actions">
+                    <span class="last-update">Last update: Never</span>
+                    <button class="btn btn-success" onclick="exportToCSV(AppState.filteredData, 'options_export.csv')">
+                        📥 Export CSV
+                    </button>
+                    <button class="btn btn-primary" id="theme-toggle">
+                        🌙 Dark Mode
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Filters -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔍 Filters</h2>
+                        <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="filters">
+                            <div class="filter-group">
+                                <label class="filter-label">Symbol</label>
+                                <input type="text" id="filter-symbol" placeholder="e.g., AAPL">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Date From</label>
+                                <input type="date" id="filter-date-from">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Date To</label>
+                                <input type="date" id="filter-date-to">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Min P/C Ratio</label>
+                                <input type="number" id="filter-pc-min" step="0.1" placeholder="0.0">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Max P/C Ratio</label>
+                                <input type="number" id="filter-pc-max" step="0.1" placeholder="5.0">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Min IV Rank</label>
+                                <input type="number" id="filter-iv-min" step="0.01" min="0" max="1" placeholder="0.0">
+                            </div>
+                            <div class="filter-group">
+                                <label class="filter-label">Max IV Rank</label>
+                                <input type="number" id="filter-iv-max" step="0.01" min="0" max="1" placeholder="1.0">
+                            </div>
+                            <div class="filter-group" style="align-self: flex-end;">
+                                <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Tabs -->
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchView('all')">All Records</button>
+                        <button class="tab" onclick="switchView('grouped')">Grouped by Ticker</button>
+                        <button class="tab" onclick="switchView('daily')">Daily View</button>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div id="table-info" style="margin-bottom: var(--spacing-md);">
+                            <span>Showing <strong id="showing-count">0</strong> of <strong id="total-count">0</strong> records</span>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table id="data-table">
+                                <thead id="table-head">
+                                    <tr>
+                                        <th onclick="sortTable('Symbol')">Symbol ⇅</th>
+                                        <th onclick="sortTable('Date')">Date ⇅</th>
+                                        <th onclick="sortTable('Last')">Price ⇅</th>
+                                        <th onclick="sortTable('Change')">Change ⇅</th>
+                                        <th onclick="sortTable('P/C Vol')">P/C Ratio ⇅</th>
+                                        <th onclick="sortTable('Options Vol')">Options Vol ⇅</th>
+                                        <th onclick="sortTable('IV Rank')">IV Rank ⇅</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <tr>
+                                        <td colspan="8" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div id="pagination" style="margin-top: var(--spacing-md); display: flex; justify-content: center; gap: var(--spacing-sm);"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/database.js"></script>
+</body>
+</html>

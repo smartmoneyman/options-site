@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Options Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <span class="sidebar-logo-icon">📊</span>
+                    <span>Options Analyzer</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <span class="nav-icon">📤</span>
+                        <span>Upload Data</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="database.html" class="nav-link">
+                        <span class="nav-icon">🗄️</span>
+                        <span>Database</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link active">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="recommendations.html" class="nav-link">
+                        <span class="nav-icon">⭐</span>
+                        <span>Recommendations</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1 class="header-title">📈 Analytics & Patterns</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="theme-toggle">🌙 Dark Mode</button>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Strategy Performance -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Strategy Performance</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-card success">
+                                <div class="stat-card-label">Momentum Strategy</div>
+                                <div class="stat-card-value">60.9%</div>
+                                <div class="stat-card-change positive">Win Rate</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-label">Hot Tickers</div>
+                                <div class="stat-card-value">56.7%</div>
+                                <div class="stat-card-change positive">Win Rate</div>
+                            </div>
+                            <div class="stat-card warning">
+                                <div class="stat-card-label">Bullish P/C</div>
+                                <div class="stat-card-value">51.4%</div>
+                                <div class="stat-card-change">Win Rate</div>
+                            </div>
+                            <div class="stat-card danger">
+                                <div class="stat-card-label">Bearish P/C</div>
+                                <div class="stat-card-value">48.7%</div>
+                                <div class="stat-card-change negative">Win Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📉 Win Rate Comparison</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="winRateChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">💰 Average Returns by Strategy</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="returnsChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pattern Tabs -->
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchPattern('momentum')">Momentum</button>
+                        <button class="tab" onclick="switchPattern('hot')">Hot Tickers</button>
+                        <button class="tab" onclick="switchPattern('highiv')">High IV</button>
+                        <button class="tab" onclick="switchPattern('reversal')">Reversal</button>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div id="pattern-content">
+                            <h3>🚀 Momentum Strategy</h3>
+                            <p><strong>Win Rate:</strong> 60.9% | <strong>Avg Return:</strong> +5.51%</p>
+                            <p><strong>Criteria:</strong></p>
+                            <ul>
+                                <li>P/C Ratio < 0.5 (sustained bullish sentiment)</li>
+                                <li>Multiple appearances in unusual volume (≥3 days)</li>
+                                <li>Positive price momentum</li>
+                            </ul>
+                            <p><strong>Best for:</strong> 2-4 week Call options or stock purchases</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Insights -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">💡 Key Insights</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success">
+                            <strong>✅ Best Strategy:</strong> Combined signals (Frequency + Low P/C + Momentum) achieve 60.9% win rate
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📊 Frequency Matters:</strong> Tickers appearing ≥5 times show 56.7% win rate vs ~50% for single appearances
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>⚠️ P/C Alone is Weak:</strong> Using only P/C Ratio results in ~50% win rate (coin flip)
+                        </div>
+                        <div class="alert alert-danger">
+                            <strong>❌ Avoid High IV:</strong> Selling volatility at IV >70% results in large moves 81% of the time
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>

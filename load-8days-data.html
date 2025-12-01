@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load 8 Days Data - Options Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+        .stats {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .stats div {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .stats strong {
+            color: #3b82f6;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .success {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .progress {
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-bar {
+            background: #e2e8f0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #3b82f6;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📊 Load 8 Days of Options Data</h1>
+        
+        <p>This will load <strong>3,880 records</strong> from 8 days (Nov 17 - Dec 1, 2025) into your browser's LocalStorage.</p>
+        
+        <div class="stats">
+            <div>📅 <strong>Period:</strong> Nov 17 - Dec 1, 2025 (8 trading days)</div>
+            <div>📈 <strong>Total Records:</strong> 3,880</div>
+            <div>🔥 <strong>Hot Tickers (≥5 appearances):</strong> 395</div>
+            <div>⭐ <strong>Strong Buy Signals:</strong> 65</div>
+            <div>📊 <strong>Tickers appeared ALL 8 days:</strong> 289</div>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <strong>⚠️ Warning:</strong> This will replace any existing data in LocalStorage!
+        </div>
+        
+        <button id="loadBtn" onclick="loadData()">🚀 Load Data into Browser</button>
+        
+        <div class="progress" id="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+        </div>
+        
+        <div class="success" id="success">
+            ✅ <strong>Success!</strong> Data loaded successfully!<br>
+            <a href="index.html" style="color: white; text-decoration: underline;">Go to Dashboard →</a>
+        </div>
+    </div>
+    
+    <script>
+        async function loadData() {
+            const btn = document.getElementById('loadBtn');
+            const progress = document.getElementById('progress');
+            const progressFill = document.getElementById('progressFill');
+            const success = document.getElementById('success');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Loading...';
+            progress.style.display = 'block';
+            
+            try {
+                // Update progress
+                progressFill.style.width = '20%';
+                progressFill.textContent = '20%';
+                
+                // Fetch data
+                const response = await fetch('data/aggregated-8days.json');
+                progressFill.style.width = '50%';
+                progressFill.textContent = '50%';
+                
+                const data = await response.json();
+                progressFill.style.width = '70%';
+                progressFill.textContent = '70%';
+                
+                // Save to LocalStorage
+                localStorage.setItem('options_data', JSON.stringify(data));
+                progressFill.style.width = '100%';
+                progressFill.textContent = '100%';
+                
+                // Show success
+                setTimeout(() => {
+                    progress.style.display = 'none';
+                    success.style.display = 'block';
+                    btn.textContent = '✅ Data Loaded!';
+                }, 500);
+                
+                console.log('✅ Loaded', data.length, 'records');
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Error loading data: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = '🚀 Load Data into Browser';
+                progress.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

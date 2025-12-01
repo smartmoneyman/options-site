@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data - Options Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <span class="sidebar-logo-icon">📊</span>
+                    <span>Options Analyzer</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="upload.html" class="nav-link active">
+                        <span class="nav-icon">📤</span>
+                        <span>Upload Data</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="database.html" class="nav-link">
+                        <span class="nav-icon">🗄️</span>
+                        <span>Database</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="analytics.html" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="recommendations.html" class="nav-link">
+                        <span class="nav-icon">⭐</span>
+                        <span>Recommendations</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span>Total Records</span>
+                    <span class="stat-value" id="sidebar-total-records">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Active Signals</span>
+                    <span class="stat-value" id="sidebar-active-signals">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Hot Tickers</span>
+                    <span class="stat-value" id="sidebar-hot-tickers">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title">📤 Upload Data</h1>
+                <div class="header-actions">
+                    <span class="last-update">Last update: Never</span>
+                    <button class="btn btn-primary" id="theme-toggle">
+                        🌙 Dark Mode
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Instructions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📋 Instructions</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Upload your Excel (.xlsx) or CSV (.csv) file containing unusual options volume data. The file should include columns: Symbol, Date, Last, P/C Vol, Options Vol, IV Rank, etc.</p>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📁 Upload New Data</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Hidden File Input -->
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
+                        
+                        <!-- Drop Zone -->
+                        <div class="upload-drop-zone" id="dropZone">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Drag & drop your file here</div>
+                            <div class="upload-hint">or click to browse</div>
+                            <div class="upload-formats">Supported formats: Excel (.xlsx, .xls), CSV (.csv)</div>
+                        </div>
+
+                        <!-- Load Demo Data Button -->
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <button class="btn btn-outline" onclick="loadDemoData()">
+                                📊 Load Demo Data
+                            </button>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="upload-progress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="progress-text" id="progressText">Processing...</div>
+                        </div>
+
+                        <!-- Preview Section -->
+                        <div id="previewSection" class="preview-section" style="display: none; margin-top: 2rem;">
+                            <h3>📊 File Preview</h3>
+                            <div class="preview-stats">
+                                <div class="preview-stat">
+                                    <span>File:</span>
+                                    <strong id="previewFilename">-</strong>
+                                </div>
+                                <div class="preview-stat">
+                                    <span>Rows:</span>
+                                    <strong id="previewRows">0</strong>
+                                </div>
+                                <div class="preview-stat">
+                                    <span>Tickers:</span>
+                                    <strong id="previewTickers">0</strong>
+                                </div>
+                            </div>
+                            <div class="preview-table-container">
+                                <table class="data-table" id="previewTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>Date</th>
+                                            <th>Last</th>
+                                            <th>P/C Vol</th>
+                                            <th>Options Vol</th>
+                                            <th>IV Rank</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="previewBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="preview-actions">
+                                <button class="btn btn-outline" onclick="cancelUpload()">Cancel</button>
+                                <button class="btn btn-success" onclick="confirmUpload()">✓ Confirm & Import</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload History -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📜 Upload History</h2>
+                        <button class="btn btn-outline btn-sm" onclick="clearHistory()">Clear History</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="uploadHistory">
+                            <p class="text-muted">No upload history</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>💡 Tips</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="tips-list">
+                            <li>✅ Supported formats: Excel (.xlsx, .xls), CSV (.csv)</li>
+                            <li>✅ Make sure your file has the following columns: Symbol, Date, Last (price), P/C Vol, Options Vol, IV Rank</li>
+                            <li>✅ For best results, include data from multiple dates to track trends</li>
+                            <li>✅ You can upload multiple files - they will be merged automatically</li>
+                            <li>⚠️ Large files (>10MB) may take longer to process</li>
+                            <li>⚠️ Duplicate entries (same symbol + date) will be automatically removed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/upload.js"></script>
+</body>
+</html>

@@ -88,18 +88,35 @@ function parseFile(data, file) {
     
     try {
         if (file.name.endsWith('.csv')) {
-            // Simple CSV parsing
-            const lines = data.split('\n');
-            const headers = lines[0].split(',');
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i].trim()) {
-                    const values = lines[i].split(',');
-                    const obj = {};
-                    headers.forEach((header, index) => {
-                        obj[header.trim()] = values[index] ? values[index].trim() : '';
-                    });
-                    parsedData.push(obj);
+            // Use PapaParse for proper CSV parsing (handles quoted values with commas)
+            if (typeof Papa !== 'undefined') {
+                const result = Papa.parse(data, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: false, // Keep all as strings initially
+                    trimHeaders: true,
+                    trimValues: true
+                });
+                
+                if (result.errors.length > 0) {
+                    console.warn('CSV parsing warnings:', result.errors);
+                }
+                
+                parsedData = result.data;
+            } else {
+                // Fallback to simple parsing (may fail with quoted commas)
+                const lines = data.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+                
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim()) {
+                        const values = lines[i].split(',');
+                        const obj = {};
+                        headers.forEach((header, index) => {
+                            obj[header] = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
+                        });
+                        parsedData.push(obj);
+                    }
                 }
             }
         } else {

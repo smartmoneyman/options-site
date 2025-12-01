@@ -134,6 +134,25 @@ function parseFile(data, file) {
             throw new Error('No data found in file');
         }
         
+        // Auto-detect or add date
+        const today = new Date().toISOString().split('T')[0]; // "2025-12-01"
+        
+        // Try to extract date from filename (e.g., "unusual-stock-options-volume-12-01-2025.csv")
+        const dateMatch = file.name.match(/(\d{2})-(\d{2})-(\d{4})/);
+        let fileDate = null;
+        if (dateMatch) {
+            // Convert MM-DD-YYYY to YYYY-MM-DD
+            fileDate = `${dateMatch[3]}-${dateMatch[1]}-${dateMatch[2]}`;
+        }
+        
+        // Add Date and UploadDate to each record
+        parsedData = parsedData.map(item => ({
+            ...item,
+            Date: item.Date || fileDate || today,
+            UploadDate: today,
+            _id: `${item.Symbol}_${item.Date || fileDate || today}` // Unique ID
+        }));
+        
         showPreview(parsedData, file.name);
         hideProgress();
         
@@ -181,13 +200,29 @@ function confirmUpload() {
     const existingData = localStorage.getItem('options_data');
     let allData = existingData ? JSON.parse(existingData) : [];
     
+    // Create Set of existing IDs for fast lookup
+    const existingIds = new Set(allData.map(item => item._id));
+    
+    // Filter only new records (skip duplicates)
+    const newRecords = tempUploadData.filter(item => {
+        const id = item._id || `${item.Symbol}_${item.Date}`;
+        return !existingIds.has(id);
+    });
+    
+    const duplicatesCount = tempUploadData.length - newRecords.length;
+    
     // Merge new data
-    allData = [...allData, ...tempUploadData];
+    allData = [...allData, ...newRecords];
     
     // Save
     localStorage.setItem('options_data', JSON.stringify(allData));
     
-    alert(`Successfully imported ${tempUploadData.length} records!`);
+    // Show results
+    let message = `Successfully imported ${newRecords.length} new records!`;
+    if (duplicatesCount > 0) {
+        message += `\n${duplicatesCount} duplicates were skipped.`;
+    }
+    alert(message);
     
     // Reset
     tempUploadData = null;
